@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14161B">
+<meta name="robots" content="noindex, nofollow">
+<title>ГЭКСАР — Электротехнический завод с 1895 года | Демо-макет v1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=PT+Sans:wght@400;700&family=PT+Mono&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        ink:    '#14161B',
+        steel:  '#1D2027',
+        panel:  '#232732',
+        line:   '#313644',
+        paper:  '#F3F1EA',
+        volt:   '#FFB300',
+        voltd:  '#C98A00',
+        fog:    '#9BA1AE',
+        mist:   '#E8E6DE',
+      },
+      fontFamily: {
+        display: ['Oswald', 'sans-serif'],
+        body: ['"PT Sans"', 'sans-serif'],
+        mono: ['"PT Mono"', 'monospace'],
+      },
+      maxWidth: {'8xl': '1440px'},
+    }
+  }
+}
+</script>
+<style>
+  :root { color-scheme: dark; }
+  html { scroll-behavior: smooth; }
+  body { background: #14161B; touch-action: manipulation; -webkit-tap-highlight-color: transparent; overflow-x: clip; }
+  /* якоря не должны прятаться под sticky-шапкой */
+  section[id] { scroll-margin-top: 88px; }
+  h1, h2, h3 { text-wrap: balance; }
+
+  /* Чертёжная сетка — инженерный фон */
+  .blueprint {
+    background-image:
+      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  }
+  /* Зерно поверх hero */
+  .grain::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  }
+  /* Сигнальная лента — жёлто-чёрная, ж/д разметка */
+  .hazard {
+    background: repeating-linear-gradient(-45deg, #FFB300 0 14px, #14161B 14px 28px);
+  }
+  .diag-lines {
+    background-image: repeating-linear-gradient(-45deg, rgba(20,22,27,.05) 0 2px, transparent 2px 14px);
+  }
+  /* Появление при загрузке */
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .d1 { animation-delay: .05s } .d2 { animation-delay: .18s } .d3 { animation-delay: .32s }
+  .d4 { animation-delay: .46s } .d5 { animation-delay: .6s } .d6 { animation-delay: .74s }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none } }
+  /* На мобиле переносы H1 убираем — текст течёт естественно */
+  @media (max-width: 640px) { .hero-h1 br { display: none; } }
+  /* Карточки продукции */
+  .pcard { transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+  .pcard:hover { transform: translateY(-4px); border-color: #FFB300; box-shadow: 0 16px 40px -18px rgba(255,179,0,.35); }
+  .pcard:hover .pcard-arrow { transform: translateX(6px); color:#FFB300; }
+  .pcard-arrow { transition: transform .25s ease, color .25s ease; }
+  /* Кнопки — перечисляем свойства вместо all */
+  .btn-volt { transition: background .2s ease, box-shadow .2s ease, transform .2s ease; }
+  .btn-volt:hover { background:#FFC233; box-shadow: 0 8px 28px -8px rgba(255,179,0,.55); transform: translateY(-1px); }
+  .btn-ghost { transition: border-color .2s ease, color .2s ease; }
+  .btn-ghost:hover { border-color:#FFB300; color:#FFB300; }
+  /* Аккордеон таймлайна — hover подсветка */
+  .trow { transition: background .2s; }
+  .trow:hover { background: rgba(255,179,0,.06); }
+  ::selection { background: #FFB300; color: #14161B; }
+</style>
+</head>
+<body class="font-body text-mist antialiased">
+<!-- Skip link (виден только при фокусе с клавиатуры) -->
+<a href="#production" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-volt focus:text-ink focus:font-display focus:uppercase focus:px-4 focus:py-2">К содержанию</a>
+
+<!-- ══════════════ УТИЛИТАРНАЯ ПОЛОСА ══════════════ -->
+<div class="hidden md:block bg-ink border-b border-line text-[13px] font-mono text-fog">
+  <div class="max-w-8xl mx-auto px-6 lg:px-10 flex justify-between items-center h-9">
+    <span>ПОСТАВЩИК ОАО «РЖД» &nbsp;·&nbsp; ПРОДУКЦИЯ СООТВЕТСТВУЕТ ТРЕБОВАНИЯМ ТС И ГОСТ</span>
+    <a href="mailto:info@geksar.ru" class="hover:text-volt transition-colors text-mist/80">INFO@GEKSAR.RU</a>
+  </div>
+</div>
+
+<!-- ══════════════ ШАПКА ══════════════ -->
+<header class="sticky top-0 z-50 bg-ink/95 backdrop-blur border-b border-line">
+  <div class="max-w-8xl mx-auto px-6 lg:px-10 flex items-center justify-between gap-6 h-[72px]">
+    <!-- Логотип -->
+    <a href="#" class="flex items-center gap-3 shrink-0" aria-label="ГЭКСАР — на главную">
+      <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true" class="shrink-0">
+        <rect x="2" y="2" width="40" height="40" fill="none" stroke="#FFB300" stroke-width="2.5"/>
+        <path d="M24 9 L15 24 h6 l-2 11 10-16 h-6 z" fill="#FFB300"/>
+      </svg>
+      <span class="leading-none">
+        <span class="block font-display font-semibold text-[24px] sm:text-[26px] tracking-[.08em] text-white">ГЭКСАР</span>
+        <span class="hidden sm:block text-[10.5px] font-mono text-fog tracking-[.14em] mt-1">ЭЛЕКТРОТЕХНИЧЕСКИЙ ЗАВОД · САРАТОВ</span>
+        <span class="sm:hidden block text-[9px] font-mono text-fog tracking-[.12em] mt-1">ЗАВОД · САРАТОВ</span>
+      </span>
+    </a>
+    <!-- Навигация -->
+    <nav class="hidden lg:flex items-center gap-8 font-display font-medium text-[15px] tracking-[.06em] uppercase">
+      <a href="#production" class="hover:text-volt transition-colors">Продукция</a>
+      <a href="#history" class="hover:text-volt transition-colors">История</a>
+      <a href="#export" class="hover:text-volt transition-colors">Экспорт</a>
+      <a href="#contacts" class="hover:text-volt transition-colors">Контакты</a>
+    </nav>
+    <!-- Телефон + CTA -->
+    <div class="flex items-center gap-3 sm:gap-5 shrink-0">
+      <a href="tel:+78452270036" class="hidden sm:block text-right leading-tight group">
+        <!-- TODO: подставить реальный телефон заказчика -->
+        <span class="block font-display text-[20px] text-white tracking-wide group-hover:text-volt transition-colors">+7 (8452) 27-00-36</span>
+        <span class="block text-[11px] font-mono text-fog">ПН–ПТ 8:00–17:00 МСК</span>
+      </a>
+      <a href="#kp" class="btn-volt hidden sm:inline-flex items-center gap-2 bg-volt text-ink font-display font-semibold uppercase tracking-[.08em] text-[15px] px-5 py-2.5">
+        Запросить КП
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <!-- Бургер (мобайл) -->
+      <button class="lg:hidden p-2 border border-line text-fog" aria-label="Меню">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="hazard h-[3px]"></div>
+</header>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="relative blueprint grain overflow-hidden border-b border-line">
+  <!-- декоративная схема: дугa контактной сети -->
+  <svg class="absolute -right-40 top-0 h-full opacity-[.16] pointer-events-none hidden md:block" viewBox="0 0 600 800" fill="none" aria-hidden="true">
+    <path d="M300 0 C 150 150, 150 500, 300 800" stroke="#FFB300" stroke-width="2"/>
+    <path d="M360 0 C 210 150, 210 500, 360 800" stroke="#8b8f9a" stroke-width="1"/>
+    <path d="M300 0 C 450 150, 450 500, 300 800" stroke="#FFB300" stroke-width="1" stroke-dasharray="6 8"/>
+    <line x1="330" y1="120" x2="330" y2="680" stroke="#8b8f9a" stroke-width="1" stroke-dasharray="2 10"/>
+    <circle cx="330" cy="120" r="5" fill="#FFB300"/><circle cx="330" cy="680" r="5" fill="#FFB300"/>
+    <text x="345" y="115" fill="#8b8f9a" font-family="PT Mono" font-size="13">К-1.2</text>
+    <text x="345" y="690" fill="#8b8f9a" font-family="PT Mono" font-size="13">К-4.8</text>
+  </svg>
+
+  <div class="relative max-w-8xl mx-auto px-6 lg:px-10 pt-14 pb-0 md:pt-16">
+    <div class="grid lg:grid-cols-[1.35fr_1fr] gap-10 xl:gap-14 items-center">
+    <div class="max-w-3xl">
+      <p class="rise d1 font-mono text-volt text-[13px] tracking-[.22em] mb-5">
+        ЭЛЕКТРОТЕХНИЧЕСКИЙ ЗАВОД · САРАТОВ · С 1895 ГОДА
+      </p>
+      <h1 class="hero-h1 rise d2 font-display font-semibold uppercase text-white leading-[1.05] text-[36px] md:text-[52px] lg:text-[58px] tracking-[.01em]">
+        Электрооборудование<br>
+        для <span class="text-volt">подвижного состава</span><br>
+        железных дорог
+      </h1>
+      <p class="rise d3 mt-6 text-lg md:text-xl text-fog max-w-2xl leading-relaxed">
+        Зарядные устройства, статические преобразователи и аккумуляторные
+        комплекты. Собственное производство полного цикла — от разработки
+        до испытаний.
+      </p>
+      <div class="rise d4 mt-9 flex flex-col sm:flex-row gap-4">
+        <a href="#kp" class="btn-volt inline-flex items-center justify-center gap-3 bg-volt text-ink font-display font-semibold uppercase tracking-[.08em] text-[16px] px-8 py-4">
+          Запросить КП
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#production" class="btn-ghost inline-flex items-center justify-center gap-3 border-2 border-line text-white font-display font-semibold uppercase tracking-[.08em] text-[16px] px-8 py-4 hover:border-volt">
+          Каталог продукции
+        </a>
+      </div>
+    </div>
+
+    <!-- Инженерный чертёж изделия — заполняет правую зону первого экрана -->
+    <div class="rise d5 hidden lg:block">
+      <svg viewBox="0 0 520 420" fill="none" class="w-full" aria-hidden="true">
+        <rect x="8" y="8" width="504" height="404" stroke="#313644" stroke-width="1.5"/>
+        <rect x="20" y="20" width="480" height="380" stroke="#313644" stroke-width="1" stroke-dasharray="4 6"/>
+        <rect x="150" y="70" width="220" height="280" stroke="#E8E6DE" stroke-width="2" fill="#1D2027"/>
+        <rect x="166" y="86" width="188" height="120" stroke="#313644" stroke-width="1"/>
+        <circle cx="190" cy="108" r="7" fill="#FFB300"/><circle cx="216" cy="108" r="7" stroke="#9BA1AE" stroke-width="1.5"/>
+        <circle cx="190" cy="132" r="7" stroke="#9BA1AE" stroke-width="1.5"/><circle cx="216" cy="132" r="7" stroke="#9BA1AE" stroke-width="1.5"/>
+        <g stroke="#313644" stroke-width="1.5">
+          <path d="M170 230 h180 M170 242 h180 M170 254 h180 M170 266 h180 M170 278 h180 M170 290 h180"/>
+        </g>
+        <rect x="170" y="306" width="180" height="28" stroke="#9BA1AE" stroke-width="1.5"/>
+        <g fill="#232732" stroke="#9BA1AE"><circle cx="186" cy="320" r="5"/><circle cx="204" cy="320" r="5"/><circle cx="222" cy="320" r="5"/><circle cx="240" cy="320" r="5"/></g>
+        <g font-family="PT Mono" font-size="12" fill="#9BA1AE">
+          <path d="M370 100 h40 v-24 h30" stroke="#FFB300" stroke-width="1"/>
+          <text x="444" y="80" fill="#FFB300">Uвых</text>
+          <path d="M370 160 h60 v40" stroke="#FFB300" stroke-width="1"/>
+          <text x="438" y="204" fill="#FFB300">Iвых</text>
+          <path d="M150 320 h-90" stroke="#FFB300" stroke-width="1"/>
+          <text x="34" y="308" fill="#FFB300">Клеммы</text>
+          <path d="M118 70 v280 M113 70 h10 M113 350 h10" stroke="#9BA1AE" stroke-width="1"/>
+          <text x="70" y="216" fill="#9BA1AE">1880</text>
+        </g>
+        <g font-family="PT Mono" font-size="10" fill="#9BA1AE">
+          <rect x="352" y="330" width="140" height="56" stroke="#313644"/>
+          <path d="M352 350 h140 M402 350 v36" stroke="#313644"/>
+          <text x="360" y="344">ГЭКСАР · ЗУ-ТЭМ</text>
+          <text x="360" y="366">ФОРМАТ A4</text>
+          <text x="410" y="378">1895</text>
+        </g>
+      </svg>
+    </div>
+
+    </div>
+
+    <!-- Статистика -->
+    <div class="rise d5 mt-12 md:mt-14 grid grid-cols-2 lg:grid-cols-4 border-t border-l border-line bg-steel/60 backdrop-blur-sm">
+      <div class="border-b border-r border-line px-6 py-6">
+        <div class="font-display text-[40px] md:text-[46px] leading-none tabular-nums text-white">130+</div>
+        <div class="mt-2 font-mono text-[12px] text-fog tracking-[.12em] uppercase">Лет непрерывного производства</div>
+      </div>
+      <div class="border-b border-r border-line px-6 py-6">
+        <div class="font-display text-[40px] md:text-[46px] leading-none tabular-nums text-white">140</div>
+        <div class="mt-2 font-mono text-[12px] text-fog tracking-[.12em] uppercase">Специалистов в штате</div>
+      </div>
+      <div class="border-b border-r border-line px-6 py-6">
+        <div class="font-display text-[40px] md:text-[46px] leading-none tabular-nums text-white">10+</div>
+        <div class="mt-2 font-mono text-[12px] text-fog tracking-[.12em] uppercase">Стран экспорта</div>
+      </div>
+      <div class="border-b border-r border-line px-6 py-6">
+        <div class="font-display text-[40px] md:text-[46px] leading-none tabular-nums text-volt">100%</div>
+        <div class="mt-2 font-mono text-[12px] text-fog tracking-[.12em] uppercase">Производство — Россия</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Полоса доверия -->
+  <div class="relative border-t border-line bg-ink/80">
+    <div class="max-w-8xl mx-auto px-6 lg:px-10 py-4 flex flex-col md:flex-row items-center gap-3 md:gap-10">
+      <span class="font-mono text-[11px] text-fog tracking-[.2em] uppercase shrink-0">Нам доверяют поставки:</span>
+      <span class="font-display uppercase tracking-[.1em] text-[15px] text-mist/85">ОАО «РЖД»</span>
+      <span class="hidden md:block w-1 h-1 bg-volt rounded-full"></span>
+      <span class="font-display uppercase tracking-[.1em] text-[15px] text-mist/85">ФГУП «ГВСУ №7»</span>
+      <span class="hidden md:block w-1 h-1 bg-volt rounded-full"></span>
+      <span class="font-display uppercase tracking-[.1em] text-[15px] text-mist/85">АО «РПК-Высоцк»</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ПРОДУКЦИЯ ══════════════ -->
+<section id="production" class="diag-lines bg-paper text-ink">
+  <div class="max-w-8xl mx-auto px-6 lg:px-10 py-16 md:py-24">
+    <div class="flex items-end justify-between gap-8 mb-12">
+      <div>
+        <p class="font-mono text-[13px] tracking-[.22em] text-voltd mb-4">01 / ПРОДУКЦИЯ</p>
+        <h2 class="font-display font-semibold uppercase text-[34px] md:text-[48px] leading-tight">Линейки оборудования</h2>
+      </div>
+      <p class="hidden md:block max-w-xs text-[15px] text-ink/60 leading-relaxed">
+        Полный цикл: конструирование, производство, стендовые испытания,
+        поставка и сервисное сопровождение.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- Карточка 1 -->
+      <a href="#" class="pcard group bg-white border-2 border-ink/10 p-7 flex flex-col">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#14161B" stroke-width="2" aria-hidden="true" class="mb-6">
+          <rect x="6" y="10" width="32" height="24"/><path d="M22 15 L15 26 h5 l-2 7 8-12 h-5 z" fill="#14161B" stroke="none"/><path d="M6 38 l-2 4 M38 38 l2 4"/>
+        </svg>
+        <h3 class="font-display font-semibold uppercase text-[19px] tracking-wide leading-snug">Зарядные устройства</h3>
+        <p class="mt-3 text-[14.5px] text-ink/60 leading-relaxed flex-grow">Для зарядки и содержания батарей бортовых сетей локомотивов и вагонов.</p>
+        <span class="pcard-arrow mt-6 inline-flex items-center gap-2 font-mono text-[12.5px] tracking-[.1em] uppercase">
+          Смотреть линейку
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+      <!-- Карточка 2 -->
+      <a href="#" class="pcard group bg-white border-2 border-ink/10 p-7 flex flex-col">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#14161B" stroke-width="2" aria-hidden="true" class="mb-6">
+          <path d="M4 28 L11 28 15 15 21 33 26 22 29 28 40 28"/><rect x="4" y="35" width="36" height="4" fill="#14161B" stroke="none" opacity=".15"/>
+        </svg>
+        <h3 class="font-display font-semibold uppercase text-[19px] tracking-wide leading-snug">Статические преобразователи</h3>
+        <p class="mt-3 text-[14.5px] text-ink/60 leading-relaxed flex-grow">Преобразование напряжения бортовых и станционных сетей для нагрузки любого типа.</p>
+        <span class="pcard-arrow mt-6 inline-flex items-center gap-2 font-mono text-[12.5px] tracking-[.1em] uppercase">
+          Смотреть линейку
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+      <!-- Карточка 3 -->
+      <a href="#" class="pcard group bg-white border-2 border-ink/10 p-7 flex flex-col">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#14161B" stroke-width="2" aria-hidden="true" class="mb-6">
+          <rect x="4" y="15" width="30" height="14"/><rect x="34" y="19" width="6" height="6" fill="#14161B" stroke="none"/><path d="M9 20h8M9 24h12" stroke="#FFB300" stroke-width="2.5"/>
+        </svg>
+        <h3 class="font-display font-semibold uppercase text-[19px] tracking-wide leading-snug">Аккумуляторные комплекты</h3>
+        <p class="mt-3 text-[14.5px] text-ink/60 leading-relaxed flex-grow">Батарейные комплекты и Ni-Cd аккумуляторы для подвижного состава и стационарных объектов.</p>
+        <span class="pcard-arrow mt-6 inline-flex items-center gap-2 font-mono text-[12.5px] tracking-[.1em] uppercase">
+          Смотреть линейку
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+      <!-- Карточка 4 -->
+      <a href="#" class="pcard group bg-white border-2 border-ink/10 p-7 flex flex-col">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#14161B" stroke-width="2" aria-hidden="true" class="mb-6">
+          <circle cx="22" cy="22" r="7"/><path d="M22 8v5M22 31v5M8 22h5M31 22h5M12 12l3.5 3.5M28.5 28.5L32 32M32 12l-3.5 3.5M15.5 28.5L12 32"/>
+        </svg>
+        <h3 class="font-display font-semibold uppercase text-[19px] tracking-wide leading-snug">Комплектующие и ЗИП</h3>
+        <p class="mt-3 text-[14.5px] text-ink/60 leading-relaxed flex-grow">Запасные части, компоненты и аксессуары для эксплуатируемого парка устройств.</p>
+        <span class="pcard-arrow mt-6 inline-flex items-center gap-2 font-mono text-[12.5px] tracking-[.1em] uppercase">
+          Смотреть линейку
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ИСТОРИЯ ══════════════ -->
+<section id="history" class="bg-ink border-b border-line">
+  <div class="max-w-8xl mx-auto px-6 lg:px-10 py-16 md:py-24 grid lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-20">
+    <div>
+      <p class="font-mono text-[13px] tracking-[.22em] text-volt mb-4">02 / ИСТОРИЯ</p>
+      <h2 class="font-display font-semibold uppercase text-white text-[34px] md:text-[48px] leading-tight">130 лет<br>по графику<br>и без брака</h2>
+      <p class="mt-6 text-fog leading-relaxed max-w-sm">
+        Завод прошёл две мировые войны, электрификацию железных дорог и
+        четыре поколения подвижного состава — и до сих пор выпускает
+        оборудование на собственном производстве в Саратове.
+      </p>
+    </div>
+    <div class="font-mono text-[14px]">
+      <div class="trow grid grid-cols-[64px_1fr] gap-6 py-4 border-b border-line items-baseline">
+        <span class="text-volt text-[16px]">1895</span>
+        <span class="text-mist/85">Основание электротехнического производства в Саратове</span>
+      </div>
+      <div class="trow grid grid-cols-[64px_1fr] gap-6 py-4 border-b border-line items-baseline">
+        <span class="text-volt text-[16px]">2008</span>
+        <span class="text-mist/85">Современная форма — ООО ЭТЗ «Гэксар», развитие линейки преобразователей</span>
+      </div>
+      <div class="trow grid grid-cols-[64px_1fr] gap-6 py-4 border-b border-line items-baseline">
+        <span class="text-volt text-[16px]">2022</span>
+        <span class="text-mist/85">Регистрация товарного знака «ГЭКСАР»</span>
+      </div>
+      <div class="trow grid grid-cols-[64px_1fr] gap-6 py-4 border-b border-line items-baseline">
+        <span class="text-volt text-[16px]">2026</span>
+        <span class="text-mist/85">Поставки в Россию, СНГ, Монголию, Алжир, Анголу, Канаду</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ЭКСПОРТ ══════════════ -->
+<section id="export" class="relative blueprint bg-steel border-b border-line overflow-hidden">
+  <div class="max-w-8xl mx-auto px-6 lg:px-10 py-16 md:py-20 flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-24">
+    <div class="shrink-0">
+      <p class="font-mono text-[13px] tracking-[.22em] text-volt mb-4">03 / ГЕОГРАФИЯ</p>
+      <h2 class="font-display font-semibold uppercase text-white text-[30px] md:text-[40px] leading-tight">Возим<br>по всему миру</h2>
+    </div>
+    <div class="flex flex-wrap gap-2.5">
+      <span class="border border-line bg-ink/60 px-4 py-2 font-mono text-[13.5px] tracking-[.06em]">ЛАТВИЯ</span>
+      <span class="border border-line bg-ink/60 px-4 py-2 font-mono text-[13.5px] tracking-[.06em]">ЛИТВА</span>
+      <span class="border border-line bg-ink/60 px-4 py-2 font-mono text-[13.5px] tracking-[.06em]">ЭСТОНИЯ</span>
+      <span class="border border-line bg-ink/60 px-4 py-2 font-mono text-[13.5px] tracking-[.06em]">КАЗАХСТАН</span>
+      <span class="border border-line bg-ink/60 px-4 py-2 font-mono text-[13.5px] tracking-[.06em]">СРЕДНЯЯ АЗИЯ</span>
+      <span class="border border-line bg-ink/60 px-4 py-2 font-mono text-[13.5px] tracking-[.06em]">МОНГОЛИЯ</span>
+      <span class="border border-volt/60 bg-volt/10 text-volt px-4 py-2 font-mono text-[13.5px] tracking-[.06em]">АЛЖИР</span>
+      <span class="border border-volt/60 bg-volt/10 text-volt px-4 py-2 font-mono text-[13.5px] tracking-[.06em]">АНГОЛА</span>
+      <span class="border border-volt/60 bg-volt/10 text-volt px-4 py-2 font-mono text-[13.5px] tracking-[.06em]">КАНАДА</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ФОРМА КП ══════════════ -->
+<section id="kp" class="bg-paper text-ink">
+  <div class="max-w-8xl mx-auto px-6 lg:px-10 py-16 md:py-24 grid lg:grid-cols-2 gap-14">
+    <div>
+      <p class="font-mono text-[13px] tracking-[.22em] text-voltd mb-4">04 / КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ</p>
+      <h2 class="font-display font-semibold uppercase text-[34px] md:text-[46px] leading-tight">Запросите расчёт за 1 рабочий день</h2>
+      <p class="mt-6 text-ink/65 text-[17px] leading-relaxed max-w-md">
+        Опишите парк оборудования или приложите ТЗ — инженеры завода
+        подготовят спецификацию и цену. Без «менеджер вам перезвонит».
+      </p>
+      <div class="mt-8 flex items-center gap-4 font-mono text-[13px] text-ink/60">
+        <span class="w-2 h-2 bg-voltd rounded-full"></span> ПРЯМОЙ КАНАЛ ЗАВОДА — БЕЗ ПОСРЕДНИКОВ
+      </div>
+    </div>
+    <form class="bg-ink text-mist p-8 md:p-10 relative overflow-hidden" onsubmit="return false">
+      <div class="hazard absolute top-0 left-0 right-0 h-[3px]"></div>
+      <div class="grid sm:grid-cols-2 gap-5">
+        <label class="block">
+          <span class="font-mono text-[11.5px] tracking-[.14em] text-fog uppercase">Ваше имя</span>
+          <input type="text" name="name" autocomplete="name" class="mt-2 w-full bg-transparent border-b-2 border-line focus:border-volt outline-none py-2.5 text-white placeholder:text-fog/50" placeholder="Иван Петров">
+        </label>
+        <label class="block">
+          <span class="font-mono text-[11.5px] tracking-[.14em] text-fog uppercase">Телефон или e-mail</span>
+          <input type="text" name="contact" autocomplete="off" inputmode="tel" class="mt-2 w-full bg-transparent border-b-2 border-line focus:border-volt outline-none py-2.5 text-white placeholder:text-fog/50" placeholder="+7 900 000-00-00…">
+        </label>
+      </div>
+      <label class="block mt-6">
+        <span class="font-mono text-[11.5px] tracking-[.14em] text-fog uppercase">Что требуется</span>
+        <textarea rows="3" name="request" autocomplete="off" class="mt-2 w-full bg-transparent border-b-2 border-line focus:border-volt outline-none py-2.5 text-white placeholder:text-fog/50 resize-none" placeholder="Например: зарядное устройство для ТЭМ2, 4 шт."></textarea>
+      </label>
+      <div class="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+        <button type="submit" class="btn-volt bg-volt text-ink font-display font-semibold uppercase tracking-[.08em] text-[15px] px-8 py-3.5">Отправить запрос</button>
+        <span class="font-mono text-[11.5px] text-fog leading-snug">ОТВЕТ ИНЖЕНЕРА — В ТЕЧЕНИЕ РАБОЧЕГО ДНЯ</span>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ══════════════ ПОДВАЛ ══════════════ -->
+<footer id="contacts" class="bg-ink border-t border-line">
+  <div class="max-w-8xl mx-auto px-6 lg:px-10 py-12 grid md:grid-cols-3 gap-10 text-[14px]">
+    <div>
+      <div class="flex items-center gap-3 mb-5">
+        <svg width="34" height="34" viewBox="0 0 44 44" aria-hidden="true">
+          <rect x="2" y="2" width="40" height="40" fill="none" stroke="#FFB300" stroke-width="2.5"/>
+          <path d="M24 9 L15 24 h6 l-2 11 10-16 h-6 z" fill="#FFB300"/>
+        </svg>
+        <span class="font-display font-semibold text-[20px] tracking-[.08em] text-white">ГЭКСАР</span>
+      </div>
+      <p class="text-fog leading-relaxed">Электротехнический завод. Производственное оборудование для железнодорожной отрасли с 1895 года.</p>
+    </div>
+    <div class="font-mono text-[13px] text-fog leading-loose">
+      <div class="text-white font-display tracking-[.1em] uppercase text-[14px] mb-3">Контакты</div>
+      <a href="tel:+78452270036" class="text-mist hover:text-volt transition-colors block">+7 (8452) 27-00-36</a>
+      <a href="mailto:info@geksar.ru" class="text-mist hover:text-volt transition-colors block">info@geksar.ru</a>
+      <span>ПН–ПТ 8:00–17:00 (МСК)</span>
+    </div>
+    <div class="font-mono text-[13px] text-fog leading-loose">
+      <div class="text-white font-display tracking-[.1em] uppercase text-[14px] mb-3">Реквизиты</div>
+      <span>ООО ЭТЗ «Гэксар»</span><br>
+      <span>ИНН 6452939012 · ОГРН 1086450010228</span><br>
+      <span>410012, г. Саратов, Привокзальная пл., 1</span>
+    </div>
+  </div>
+  <div class="border-t border-line">
+    <div class="max-w-8xl mx-auto px-6 lg:px-10 py-4 flex flex-col md:flex-row justify-between gap-2 font-mono text-[11.5px] text-fog">
+      <span>© 1895–2026 ЭТЗ «Гэксар»</span>
+      <span class="text-voltd">ДЕМО-МАКЕТ V1 · ПОДГОТОВЛЕНО ДЛЯ ООО ЭТЗ «ГЭКСАР» · НЕ ПУБЛИКАЦИЯ</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
