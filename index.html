@@ -134,9 +134,25 @@ tailwind.config = {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
       <!-- Бургер (мобайл) -->
-      <button class="lg:hidden p-2 border border-line text-fog" aria-label="Меню">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <button id="menuBtn" class="lg:hidden p-2 border border-line text-fog hover:text-volt hover:border-volt transition-colors" aria-label="Меню" aria-expanded="false" aria-controls="mobileMenu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
+    </div>
+  </div>
+  <!-- Мобильное меню (тогглится JS) -->
+  <div id="mobileMenu" class="lg:hidden hidden border-t border-line bg-ink">
+    <nav class="px-6 py-5 flex flex-col gap-1 font-display font-medium text-[16px] tracking-[.06em] uppercase" aria-label="Мобильная навигация">
+      <a href="#production" class="menu-link py-3 border-b border-line/60 text-mist hover:text-volt transition-colors">Продукция</a>
+      <a href="#history" class="menu-link py-3 border-b border-line/60 text-mist hover:text-volt transition-colors">История</a>
+      <a href="#export" class="menu-link py-3 border-b border-line/60 text-mist hover:text-volt transition-colors">Экспорт</a>
+      <a href="#contacts" class="menu-link py-3 border-b border-line/60 text-mist hover:text-volt transition-colors">Контакты</a>
+    </nav>
+    <div class="px-6 pb-5 flex flex-col gap-3">
+      <a href="tel:+78452270036" class="font-display text-[20px] text-white tracking-wide">+7 (8452) 27-00-36</a>
+      <a href="#kp" class="btn-volt inline-flex items-center justify-center gap-2 bg-volt text-ink font-display font-semibold uppercase tracking-[.08em] text-[15px] px-5 py-3">
+        Запросить КП
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
     </div>
   </div>
   <div class="hazard h-[3px]"></div>
@@ -157,11 +173,11 @@ tailwind.config = {
 
   <div class="relative max-w-8xl mx-auto px-6 lg:px-10 pt-14 pb-0 md:pt-16">
     <div class="grid lg:grid-cols-[1.35fr_1fr] gap-10 xl:gap-14 items-center">
-    <div class="max-w-3xl">
+    <div class="max-w-3xl min-w-0">
       <p class="rise d1 font-mono text-volt text-[13px] tracking-[.22em] mb-5">
         ЭЛЕКТРОТЕХНИЧЕСКИЙ ЗАВОД · САРАТОВ · С 1895 ГОДА
       </p>
-      <h1 class="hero-h1 rise d2 font-display font-semibold uppercase text-white leading-[1.05] text-[36px] md:text-[52px] lg:text-[58px] tracking-[.01em]">
+      <h1 class="hero-h1 rise d2 font-display font-semibold uppercase text-white leading-[1.05] text-[30px] sm:text-[36px] md:text-[52px] lg:text-[58px] tracking-[.01em]">
         Электрооборудование<br>
         для <span class="text-volt">подвижного состава</span><br>
         железных дорог
@@ -444,6 +460,39 @@ tailwind.config = {
     </div>
   </div>
 </footer>
+
+<script>
+(function () {
+  var btn = document.getElementById('menuBtn');
+  var menu = document.getElementById('mobileMenu');
+  if (!btn || !menu) return;
+
+  function setMenu(open) {
+    menu.classList.toggle('hidden', !open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  btn.addEventListener('click', function () {
+    setMenu(menu.classList.contains('hidden'));
+  });
+
+  // закрыть по клику на любой пункт/CTA внутри панели
+  menu.addEventListener('click', function (e) {
+    if (e.target.closest('a')) setMenu(false);
+  });
+
+  // Escape закрывает
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setMenu(false);
+  });
+
+  // при росте окна до десктопа — панель прибрать
+  window.matchMedia('(min-width: 1024px)').addEventListener('change', function (e) {
+    if (e.matches) setMenu(false);
+  });
+})();
+</script>
 
 </body>
 </html>
